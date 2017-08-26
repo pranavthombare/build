@@ -1,4 +1,13 @@
 # Put some miscellaneous rules here
+#
+# Build system colors
+#
+# PFX: Prefix "target C++:" in yellow
+# INS: Module "Install:" output color (cyan for ics)
+
+ifneq ($(BUILD_WITH_COLORS),0)
+    include $(TOP_DIR)build/core/colors.mk
+endif
 
 # HACK: clear LOCAL_PATH from including last build target before calling
 # intermedites-dir-for
@@ -2759,14 +2768,27 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) \
 	   $(if $(OEM_OTA_CONFIG), -o $(OEM_OTA_CONFIG)) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
-CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(TARGET_PRODUCT).zip
+LEGENDROM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(LEGENDROM_VERSION).zip
 
-.PHONY: otapackage bacon
+.PHONY: otapackage bacon legendrom
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
-	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
-	$(hide) $(MD5SUM) $(CUSTOM_TARGET_PACKAGE) > $(CUSTOM_TARGET_PACKAGE).md5sum
-	@echo -e "Package complete: $(CUSTOM_TARGET_PACKAGE)"
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(LEGENDROM_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(LEGENDROM_TARGET_PACKAGE) > $(LEGENDROM_TARGET_PACKAGE).md5sum
+	@echo -e "Package complete: $(LEGENDROM_TARGET_PACKAGE)"
+legendrom: otapackage
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(LEGENDROM_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(LEGENDROM_TARGET_PACKAGE) > $(LEGENDROM_TARGET_PACKAGE).md5sum
+	@echo -e ${CL_RED}""${CL_RED}
+	@echo -e ${CL_RED}"  _                               _ _____   ____  __  __  "${CL_RED}
+	@echo -e ${CL_RED}" | |                             | |  __ \ / __ \|  \/  | "${CL_RED}
+	@echo -e ${CL_RED}" | |     ___  __ _  ___ _ __   __| | |__) | |  | | \  / | "${CL_RED}
+	@echo -e ${CL_RED}" | |    / _ \/ _` |/ _ \ '_ \ / _` |  _  /| |  | | |\/| | "${CL_RED}
+	@echo -e ${CL_RED}" | |___|  __/ (_| |  __/ | | | (_| | | \ \| |__| | |  | | "${CL_RED}
+	@echo -e ${CL_RED}" |______\___|\__, |\___|_| |_|\__,_|_|  \_\\____/|_|  |_| "${CL_RED}
+	@echo -e ${CL_RED}"              __/ |                                       "${CL_RED}
+	@echo -e ${CL_RED}"             |___/                                        "${CL_RED}
+	@echo -e "Package complete: $(LEGENDROM_TARGET_PACKAGE)"
 
 endif    # build_ota_package
 
